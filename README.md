@@ -40,6 +40,7 @@ Pythonista’s standards.
 
 Define a resource:
 
+```py
     from dagny import Resource, action
     from django.shortcuts import get_object_or_404, redirect
     from polls import forms, models
@@ -64,6 +65,10 @@ Define a resource:
             return self.new.render()
         
         @action
+        def show(self, poll_id):
+            self.poll = get_object_or_404(models.Poll, id=int(poll_id))
+
+        @action
         def edit(self, poll_id):
             self.poll = get_object_or_404(models.Poll, id=int(poll_id))
             self.form = forms.PollForm(instance=self.poll)
@@ -83,9 +88,11 @@ Define a resource:
             self.poll = get_object_or_404(models.Poll, id=int(poll_id))
             self.poll.delete()
             return redirect("Poll#index")
+```
 
 Create the templates:
 
+```html
     <!-- polls/index.html -->
     <ol>
       {% for poll in self.polls %}
@@ -111,15 +118,18 @@ Create the templates:
       {{ self.form.as_p }}
       <input type="submit" value="Update poll" />
     </form>
+```
 
 Set up the URLs:
 
+```py
     from django.conf.urls.defaults import *
     from dagny.urls import resources
     
     urlpatterns = patterns('',
         (r'^polls/', resources('polls.resources.Poll', name='Poll')),
     )
+```
 
 Done.
 
@@ -134,6 +144,7 @@ management app, built in very few lines of code on top of the standard
 
 To get it running:
 
+```bash
     git clone 'git://github.com/zacharyvoase/dagny.git'
     cd dagny/
     pip install -r REQUIREMENTS  # Installs runtime requirements
@@ -142,6 +153,7 @@ To get it running:
     ./manage.py syncdb  # Creates db/development.sqlite3
     ./manage.py test users  # Runs all the tests
     ./manage.py runserver
+```
 
 Then just visit <http://localhost:8000/users/> to see it in action!
 
